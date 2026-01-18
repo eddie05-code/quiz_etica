@@ -33,15 +33,10 @@
     justify-content: center;
   }
   h1 {
-    margin: 0 0 10px 0;
+    margin: 0 0 30px 0; /* Am mărit puțin marja pentru că a dispărut paragraful */
     font-size: 26px;
     color: var(--text-main);
     font-weight: 700;
-  }
-  p {
-    color: var(--text-sub);
-    margin-bottom: 30px;
-    font-size: 15px;
   }
   .btn-container {
     display: flex;
@@ -55,7 +50,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 16px;
+    padding: 20px; /* Am ajustat puțin padding-ul pentru un aspect echilibrat */
     border-radius: 12px;
     border: 2px solid var(--accent);
     background: white;
@@ -66,12 +61,6 @@
     text-decoration: none;
     transition: all 0.2s ease;
     box-sizing: border-box;
-  }
-  .menu-btn span {
-    font-size: 13px;
-    font-weight: 500;
-    margin-top: 4px;
-    opacity: 0.8;
   }
   .menu-btn:hover {
     background: var(--accent);
@@ -88,17 +77,14 @@
 
 <div class="card">
   <h1>Quiz Integritate</h1>
-  <p>Alegeți setul de întrebări pentru exersare</p>
 
   <div class="btn-container">
     <a href="quizA.html" class="menu-btn">
-      Set Întrebări A
-      <span>(Conține întrebările 1 - 21)</span>
+      Set Intrebari A
     </a>
     
     <a href="quizB.html" class="menu-btn">
-      Set Întrebări B
-      <span>(Conține întrebările 1 - 21)</span>
+      Set Intrebari B
     </a>
   </div>
 </div>
