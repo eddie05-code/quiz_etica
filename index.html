@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Meniu Quiz Etică</title>
+<style>
+  :root {
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --accent: #0ea5a4;
+    --text-main: #1f2937;
+    --text-sub: #6b7280;
+  }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  .card {
+    width: min(400px, 90vw);
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    padding: 40px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  h1 {
+    margin: 0 0 10px 0;
+    font-size: 26px;
+    color: var(--text-main);
+    font-weight: 700;
+  }
+  p {
+    color: var(--text-sub);
+    margin-bottom: 30px;
+    font-size: 15px;
+  }
+  .btn-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+  }
+  .menu-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid var(--accent);
+    background: white;
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+  }
+  .menu-btn span {
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 4px;
+    opacity: 0.8;
+  }
+  .menu-btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(14, 165, 164, 0.2);
+  }
+  .menu-btn:active {
+    transform: scale(0.98);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Quiz Integritate</h1>
+  <p>Alegeți setul de întrebări pentru exersare</p>
+
+  <div class="btn-container">
+    <a href="quizA.html" class="menu-btn">
+      Set Întrebări A
+      <span>(Conține întrebările 1 - 21)</span>
+    </a>
+    
+    <a href="quizB.html" class="menu-btn">
+      Set Întrebări B
+      <span>(Conține întrebările 1 - 21)</span>
+    </a>
+  </div>
+</div>
+
+</body>
+</html>

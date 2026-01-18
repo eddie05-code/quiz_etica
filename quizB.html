@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Quiz Etică Set B</title>
+<style>
+  :root{--bg:#f3f4f6; --card:#ffffff; --accent:#0ea5a4; --green:#16a34a; --red:#dc2626;}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;box-sizing:border-box;}
+  .card{width:min(900px,95vw);background:var(--card);border-radius:16px;box-shadow:0 8px 24px rgba(15,23,42,0.12);padding:24px;}
+  h1{ margin:0 0 12px 0;font-size:20px; }
+  .question{font-size:18px;margin:16px 0;min-height:48px; line-height:1.5;}
+  .options{display:flex;flex-direction:column;gap:8px}
+  .option{padding:12px 16px;border-radius:10px;border:1px solid #e6e6e6;cursor:pointer;display:flex;align-items:center;justify-content:space-between; transition:background 0.2s;}
+  .option:hover{background:#f9fafb;}
+  .option.disabled{opacity:0.6;cursor:default}
+  .option.correct{background:rgba(22,163,74,0.12);border-color:rgba(22,163,74,0.3); color:var(--green); font-weight:600;}
+  .option.wrong{background:rgba(220,38,38,0.06);border-color:rgba(220,38,38,0.2); color:var(--red);}
+  .controls{display:flex;gap:12px;margin-top:24px;align-items:center;flex-wrap:wrap;}
+  button{padding:12px 20px;border-radius:10px;border:none;background:var(--accent);color:white;cursor:pointer;font-weight:600;font-size:16px;}
+  button:hover{opacity:0.9;}
+  button.secondary{background:#e6e6e6;color:#111}
+  .feedback{margin-left:8px;font-weight:700}
+  .status{margin-left:auto;color:#374151;font-size:14px}
+  .visual{height:6px;background:linear-gradient(90deg,var(--accent),#7c3aed);border-radius:999px;margin-top:12px;}
+  .small{font-size:13px;color:#6b7280}
+  
+  /* Navigation back to menu */
+  .back-link { display:inline-block; margin-bottom:15px; text-decoration:none; color:#6b7280; font-weight:600; font-size:14px;}
+  .back-link:hover { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="card">
+  <a href="index.html" class="back-link">← Back to Menu</a>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+    <h1>Quiz Etică Set B</h1>
+    <div style="margin-left:auto" id="progressText" class="small">Answer to start</div>
+  </div>
+  <div class="visual" id="visualBar"></div>
+  <div id="quizArea">
+    <div id="qnum" class="small" style="margin-top:10px"></div>
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div class="controls">
+      <button id="submitBtn">Submit</button>
+      <button id="nextBtn" class="secondary" style="display:none">Next</button>
+      <div id="feedback" class="feedback"></div>
+      <div class="status" id="score">Score: 0</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* DATA EXTRACTION NOTE: 
+   [cite_start]Text extracted from PDF B  [cite: 434-889].
+   Where the user in the screenshot answered incorrectly, the 
+   "Correct Answer" logic was pulled from the correction text 
+   at the bottom of the screenshot.
+*/
+const quiz = [
+  {
+    "qnum": "1",
+    "question": "Care dintre variantele de mai jos nu desemnează un stil de citare a bibliografiei?",
+    "options": [
+      "a. stilul JEL (Journal of Economic Literature)",
+      "b. stilul MLA (Modern Language Association)",
+      "c. stilul APA (American Psychological Association)",
+      "d. stilul Chicago"
+    ],
+    "correct": "a. stilul JEL (Journal of Economic Literature)"
+  },
+  {
+    "qnum": "2",
+    "question": "Drepturile de autor protejează proprietatea intelectuală pe o perioadă de:",
+    "options": [
+      "a. 70 de ani de la decesul autorului sau de la decesul ultimului autor supraviețuitor în cazul unei lucrări realizate de un grup de persoane în ţările Uniunii Europene și minimum 50 de ani de la decesul autorului în afara Uniunii Europene, în țările semnatare ale convenției de la Berna",
+      "b. 100 de ani de la decesul autorului sau de la decesul ultimului autor supraviețuitor în cazul unei lucrări realizate de un grup de persoane în țările Uniunii Europene și minimum 60 de ani de la decesul autorului în afara Uniunii Europene, în țările semnatare ale convenţiei de la Berna",
+      "c. 80 de ani de la decesul autorului sau de la decesul ultimului autor supraviețuitor în cazul unei lucrări realizate de un grup de persoane în țările Uniunii Europene"
+    ],
+    "correct": "a. 70 de ani de la decesul autorului sau de la decesul ultimului autor supraviețuitor în cazul unei lucrări realizate de un grup de persoane în ţările Uniunii Europene și minimum 50 de ani de la decesul autorului în afara Uniunii Europene, în țările semnatare ale convenției de la Berna"
+  },
+  {
+    "qnum": "3",
+    "question": "Care dintre afirmaţiile de mai jos, referitoare la utilizarea programului Turnitin este adevărată?",
+    "options": [
+      "a. raportul de similitudine este disponibil întotdeauna, indiferent de setări, atât utilizatorului - profesor cât și utilizatorilor - studenți",
+      "b. permite verificarea oricărui tip de fişier mai mic de 50 MB",
+      "c. permite verificarea oricărui tip de fişier mai mic decât 500 de pagini",
+      "d. permite verificarea oricărui tip de fişier mai mare decât 20 de cuvinte"
+    ],
+    "correct": "d. permite verificarea oricărui tip de fişier mai mare decât 20 de cuvinte"
+  },
+  {
+    "qnum": "4",
+    "question": "în care dintre următoarele situații, analiza factorului uman nu conduce la exonerarea de suspiciune a unor similitudini:",
+    "options": [
+      "a. pasajul indicat ca similar este un citat, marcat cu ghilimele și care are trimitere conform regulilor de citare recunoscute",
+      "b. pasajul indicat ca similar este, de fapt, o sintagmă uzuală",
+      "c. textul indicat de raport este similar cu un alt text al aceluiaşi autor, postat anterior, dar în lucrarea verificată este menționată explicit existența publicației anterioare",
+      "d. textul similar semnalat în raport a fost postat online anterior redactării textului verificat"
+    ],
+    "correct": "d. textul similar semnalat în raport a fost postat online anterior redactării textului verificat"
+  },
+  {
+    "qnum": "5",
+    "question": "Un Cod de etică prin care se stabilesc anumite standarde profesionale pe care membrii unei comunități se angajează să le respecte, fără a fi însă constrânși, este un cod de tip:",
+    "options": [
+      "a. procedural",
+      "b. punitiv",
+      "c. aspirațional",
+      "d. educativ"
+    ],
+    "correct": "c. aspirațional"
+  },
+  {
+    "qnum": "6",
+    "question": "Sub protecţia dreptului de proprietate intelectuală nu intră:",
+    "options": [
+      "a. compact discul pe care a fost imprimată o piesă muzicală",
+      "b. semnele industriale, mărcile înregistrate, cele de servicii, numele comercial și emblemele, protecţia împotriva concurenței neloiale și toate drepturile rezultând dintr-o activitate intelectuală în domeniile industrial, literar sau artistic",
+      "c. spectacolele și expozițiile artiştilor, fotografilor şi televiziunilor",
+      "d. operele literare, artistice și științifice"
+    ],
+    "correct": "a. compact discul pe care a fost imprimată o piesă muzicală"
+  },
+  {
+    "qnum": "7",
+    "question": "Care dintre următoarele caracteristici se referă la o relație de autoritate?",
+    "options": [
+      "a. este o relație prin care o persoană sau un grup acceptă ca legitim faptul că acțiunile sale pot să fie ghidate de o instanță superioară",
+      "b. este expresia unilaterală a dreptului de dispoziție, fără a presupune cu necesitate recunoașterea",
+      "c. acceptarea ei are ca rezervă constrângerea",
+      "d. legitimitatea ei este definită de o investitură structural-funcțională"
+    ],
+    "correct": "a. este o relație prin care o persoană sau un grup acceptă ca legitim faptul că acțiunile sale pot să fie ghidate de o instanță superioară"
+  },
+  {
+    "qnum": "8",
+    "question": "Care dintre următoarele afirmaţii referitoare la managementul eticii nu este adevărată?",
+    "options": [
+      "a. se referă la calitatea sau valoarea etică a activităților de management",
+      "b. este disciplina care dezvoltă şi implementează o serie de măsuri instituționale pentru a combate și preveni comportamentele imorale din cadrul unei universități",
+      "c. se preocupă de organizarea și crearea unor instrumente care vizează aspectele etice ale unei universități",
+      "d. dezvoltă instrumente precum: coduri de etică, comisii de etică, coduri profesionale de conduită sau de onoare, audit etic, training-uri de etică, birouri de etică etc."
+    ],
+    "correct": "a. se referă la calitatea sau valoarea etică a activităților de management"
+  },
+  {
+    "qnum": "9",
+    "question": "Care dintre acţiunile de mai jos reprezintă o respectare a standardelor științifice și a normelor de bună conduită în activitatea de cercetare - dezvoltare?",
+    "options": [
+      "a. difuzarea rezultatelor proprii într-o manieră iresponsabilă, cu exagerări şi repetări",
+      "b. dezvăluirea conflictelor de interese",
+      "c. prezentarea deliberat deformată a rezultatelor altor cercetători",
+      "d. confecționarea de rezultate"
+    ],
+    "correct": "b. dezvăluirea conflictelor de interese"
+  },
+  {
+    "qnum": "10",
+    "question": "Care este singurul program utilizat în România pentru stabilirea gradului de similitudine care permite detectarea parafrazei cu un grad crescut de originalitate în limbile engleză și română?",
+    "options": [
+      "a. Semplag",
+      "b. VIPER",
+      "c. Sistemantiplagiat.ro",
+      "d. Turnitin"
+    ],
+    "correct": "a. Semplag"
+  },
+  {
+    "qnum": "11",
+    "question": "Efectele sociale ale lipsei unor valori autentice în învăţământul superior se pot materializa, în mod concret, printr-o serie de urmări. Printre aceste urmări nefavorabile se numără:",
+    "options": [
+      "a. instalarea unor percepții pozitive la nivelul societății despre ceea ce reprezintă învățământul universitar",
+      "b. supraaprecierea studiilor doctorale",
+      "c. devalorizarea statutului de cadru didactic universitar",
+      "d. creşterea calității învățământului"
+    ],
+    "correct": "c. devalorizarea statutului de cadru didactic universitar"
+  },
+  {
+    "qnum": "13",
+    "question": "Care dintre acțiunile de mai jos NU constituie o încălcare a principiului integrității în activitatea de conducere și cea administrativ-managerială conform prevederilor Codului de etică și deontologie profesională universitară al Universității de Vest din Timişoara?",
+    "options": [
+      "a. orientarea activității de cercetare a studenților, masteranzilor, doctoranzilor în scopul obținerii unui avantaj personal de către îndrumător",
+      "b. participarea unui membru al conducerii și administrației universității la negocieri comerciale cu firme sau organizații în care are un interes personal, direct sau indirect",
+      "c. încheierea de către membrii conducerii şi/sau administrației de contracte, angajamente, parteneriate...",
+      "d. deținerea de funcții de conducere..."
+    ],
+    "correct": "a. orientarea activității de cercetare a studenților, masteranzilor, doctoranzilor în scopul obținerii unui avantaj personal de către îndrumător"
+  },
+  {
+    "qnum": "14",
+    "question": "Fenomenul de „bullying” manifestat din partea personalului universitar față de studenți, se concretizează prin:",
+    "options": [
+      "a. amenințări referitoare la evaluare în cazul în care studenții refuză să îndeplinească anumite cerințe nejustificate ale profesorului",
+      "b. încrederea exagerată în notele acordate de un membru neexperimentat al colectivului profesoral",
+      "c. favorizarea unor studenți apropiaţi profesorului care nu sunt evaluaţi conform standardelor oficiale",
+      "d. refuzul profesorului de a vorbi cu studenții despre notele acordate"
+    ],
+    "correct": "a. amenințări referitoare la evaluare în cazul în care studenții refuză să îndeplinească anumite cerințe nejustificate ale profesorului"
+  },
+  {
+    "qnum": "15",
+    "question": "Se consideră că plagiatul este cu atât mai sever cu cât:",
+    "options": [
+      "a. nu decurge din simpla necunoaștere a regulilor de bună conduită științifică sau din simple erori materiale de redactare",
+      "b. nu are un caracter repetitiv în seria lucrărilor semnate de autorul suspectat de plagiat",
+      "c. ideile originale preluate fără recunoașterea adecvată a sursei sunt localizate în mai mică măsură în introducere, concluzii sau alte secțiuni ale lucrării destinate în mod special contribuțiilor specifice autorului",
+      "d. acoperă o pondere mai mică din formele de prezentare a operei analizate (cuvinte, paragrafe, pagini, tabele, grafice)"
+    ],
+    "correct": "a. nu decurge din simpla necunoaștere a regulilor de bună conduită științifică sau din simple erori materiale de redactare"
+  },
+  {
+    "qnum": "16",
+    "question": "Forma de plagiat care presupune exprimarea unei idei folosind alte cuvinte, însă fără a menționa sursa de inspirație se numeşte:",
+    "options": [
+      "a. plagiat de tip „copy – paste” de pe Internet",
+      "b. plagiat prin complicitate („collusion”)",
+      "c. plagiat prin parafrazare",
+      "d. plagiat prin citare vagă"
+    ],
+    "correct": "c. plagiat prin parafrazare"
+  },
+  {
+    "qnum": "17",
+    "question": "Acțiunea deliberată de confecționare, falsificare, plagiere sau înstrăinare ilicită a rezultatelor cercetării științifice poartă denumirea de:",
+    "options": [
+      "a. frauda în ştiinţă",
+      "b. confecționarea de date",
+      "c. falsificare",
+      "d. conflict de interese"
+    ],
+    "correct": "a. frauda în ştiinţă"
+  },
+  {
+    "qnum": "18",
+    "question": "În mediul academic, încălcarea proprietății intelectuale se produce atunci când sunt utilizate sau însuşite creațiile intelectuale ale altor persoane, cu sau fără a urmări un scop comercial, prin acţiuni cum ar fi:",
+    "options": [
+      "a. folosirea lucrărilor (eseuri, referate, proiecte, înregistrări, experimente etc.) realizate de alte persoane și prezentarea acestora ca fiind creație personală",
+      "b. distribuirea neautorizată (inclusiv prin internet) a unor materiale didactice (cursuri universitare, înregistrări) furnizate de către profesori, care sunt protejate de drepturi de autor, cu scopul de a obține foloase",
+      "c. distribuirea neautorizată (inclusiv prin internet) a unor materiale didactice (cursuri universitare, înregistrări) furnizate de către profesori, care sunt protejate de drepturi de autor, fără scopul de a obține foloase",
+      "d. toate răspunsurile sunt corecte"
+    ],
+    "correct": "d. toate răspunsurile sunt corecte"
+  },
+  {
+    "qnum": "19",
+    "question": "Plagiatul vizează:",
+    "options": [
+      "a. textul scris",
+      "b. imaginile",
+      "c. partiturile muzicale",
+      "d. toate răspunsurile sunt corecte"
+    ],
+    "correct": "d. toate răspunsurile sunt corecte"
+  },
+  {
+    "qnum": "20",
+    "question": "Care dintre virtuțile organizaționale necesare unei universități morale evaluează gradul în care exigențele morale ale universității faţă de conduita membrilor acesteia sunt coerente, fără contradicții, urmărind, de exemplu, dacă modelul oferit de cadrele didactice cursanţilor sau de superiorii ierarhici personalului administrativ este unul în acord cu normele morale exprimate de politicile și procedurile etice ale universităţii?",
+    "options": [
+      "a. consistenţă",
+      "b. susținere",
+      "c. claritate",
+      "d. vizibilitate"
+    ],
+    "correct": "a. consistenţă"
+  },
+  {
+    "qnum": "21",
+    "question": "Care dintre variantele de mai jos reprezintă o formă de respectare a integrității academice în activitatea administrativă și managerială a unei universități?",
+    "options": [
+      "a. respectarea corectă a tuturor procedurilor de alegere sau numire a structurilor de conducere ale universității",
+      "b. încheierea de acte juridice (contracte, angajamente, parteneriate sau orice altă formă de colaborare) sau operațiuni în interesul universității, cu excluderea oricărui conflict de interes",
+      "c. derularea corectă a procedurilor de selecție / promovare a personalului administrativ",
+      "d. toate răspunsurile sunt corecte"
+    ],
+    "correct": "d. toate răspunsurile sunt corecte"
+  }
+]
+
+let shuffledQuiz = shuffleArray([...quiz]); 
+let currentIndex = 0;
+let score = 0;
+
+const accent = getComputedStyle(document.documentElement)
+  .getPropertyValue('--accent').trim();
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickQuestion() {
+  if (currentIndex >= shuffledQuiz.length) {
+    document.getElementById('quizArea').innerHTML = `<h2>Quiz Finished!</h2><p>Your score: ${score} / ${shuffledQuiz.length}</p><a href="index.html" class="back-link" style="font-size:16px">← Return to Menu</a>`;
+    document.getElementById('visualBar').style.width = '100%';
+    document.getElementById('progressText').textContent = `Completed!`;
+    return;
+  }
+  const item = shuffledQuiz[currentIndex];
+  const opts = [...item.options]; 
+  current = Object.assign({}, item, {shuffled: shuffleArray(opts)});
+  renderQuestion();
+}
+
+function renderQuestion() {
+  document.getElementById('qnum').textContent = `Q${current.qnum}`;
+  document.getElementById('question').textContent = current.question;
+  const optionsDiv = document.getElementById('options');
+  optionsDiv.innerHTML = '';
+  current.shuffled.forEach((opt,i)=>{
+    const el = document.createElement('div');
+    el.className = 'option';
+    el.innerHTML = `<span>${opt}</span>`;
+    el.addEventListener('click', ()=> selectOption(el, opt));
+    optionsDiv.appendChild(el);
+  });
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('nextBtn').style.display = 'none';
+  updateProgressVisual();
+}
+
+let selectedEl = null;
+let selectedText = "";
+
+function selectOption(el, text){
+  if(el.classList.contains('disabled')) return;
+  document.querySelectorAll('.option').forEach(o=>o.style.boxShadow='none');
+  selectedEl = el;
+  selectedText = text;
+  el.style.boxShadow = `inset 0 0 0 2px ${accent}`;
+}
+
+document.getElementById('submitBtn').addEventListener('click', ()=>{
+  if(!selectedEl) {
+    alert('Please select an option first');
+    return;
+  }
+  const isCorrect = selectedText.trim() === current.correct.trim();
+  document.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  
+  if(isCorrect){
+    selectedEl.classList.add('correct');
+    document.getElementById('feedback').textContent = 'Correct ✓';
+    document.getElementById('feedback').style.color = 'var(--green)';
+    score += 1;
+  } else {
+    selectedEl.classList.add('wrong');
+    const opts = Array.from(document.querySelectorAll('.option'));
+    const correctEl = opts.find(o => o.textContent.trim() === current.correct.trim());
+    if(correctEl) correctEl.classList.add('correct');
+    
+    document.getElementById('feedback').textContent = 'Wrong ✗';
+    document.getElementById('feedback').style.color = 'var(--red)';
+  }
+  document.getElementById('score').textContent = `Score: ${score} / ${currentIndex+1}`;
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('nextBtn').style.display = 'inline-block';
+  updateProgressVisual();
+});
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  selectedEl = null;
+  currentIndex += 1;
+  pickQuestion();
+});
+
+function updateProgressVisual(){
+  const bar = document.getElementById('visualBar');
+  const ratio = currentIndex === 0 ? 0 : score / (currentIndex+1);
+  bar.style.background = `linear-gradient(90deg, rgba(16,185,129,1) ${ratio*100}%, rgba(209,213,219,1) ${ratio*100}%)`;
+  document.getElementById('progressText').textContent = currentIndex===0 ? 'Not answered yet' : `Answered ${currentIndex+1} / ${shuffledQuiz.length} — Accuracy ${(ratio*100).toFixed(0)}%`;
+}
+
+pickQuestion();
+
+</script>
+</body>
+</html>
